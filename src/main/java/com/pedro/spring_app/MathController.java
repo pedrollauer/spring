@@ -3,10 +3,14 @@ package com.pedro.spring_app;
 import com.pedro.spring_app.exceptions.UnsupportedMathOperationException;
 import org.springframework.web.bind.annotation.*;
 
+import static com.pedro.spring_app.numeric.NumericHelper.convertToDouble;
+import static com.pedro.spring_app.numeric.NumericHelper.isNumber;
+
+
 @RestController
 public class MathController {
-    @RequestMapping(value="/sum/{n1}/{n2}")
-    public double sum(@PathVariable(value = "n1") String numberOne, @PathVariable(value="n2") String numberTwo){
+    @RequestMapping(value="/sum")
+    public double sum(@RequestParam(value = "x") String numberOne, @RequestParam(value="y") String numberTwo){
 
         if(!isNumber(numberOne) || !isNumber(numberTwo)){
            throw new UnsupportedMathOperationException("Invalid Parameter!");
@@ -15,24 +19,55 @@ public class MathController {
         return convertToDouble(numberOne) + convertToDouble(numberTwo);
     }
 
-    private double convertToDouble(String number) {
-        if(number == null){
-            return 0d;
+    @RequestMapping(value="/sub")
+    public double subtraction(@RequestParam(value = "x") String numberOne, @RequestParam(value="y") String numberTwo){
+
+        if(!isNumber(numberOne) || !isNumber(numberTwo)){
+            throw new UnsupportedMathOperationException("Invalid Parameter!");
         }
 
-        if(isNumber(number)) return Double.parseDouble(number);
-        return 0.0D;
+        return convertToDouble(numberOne) - convertToDouble(numberTwo);
     }
 
-    private boolean isNumber(String numberOne) {
-        if (numberOne == null) return false;
-        String number = numberOne.replaceAll(",", ".");
-        return number.matches("[-+]?[0-9]*\\.?[0-9]+");
+    @RequestMapping(value = "/div")
+    public double division(@RequestParam("x") String numberOne, @RequestParam("y") String numberTwo){
+
+        if(!isNumber(numberOne) || !isNumber(numberTwo)){
+            throw new UnsupportedMathOperationException("Invalid Parameter!");
+        }
+
+        double denominator = convertToDouble(numberTwo);
+
+        if(denominator == 0){
+            throw new UnsupportedMathOperationException("Can't divide by zero");
+        }
+
+        return convertToDouble(numberOne)/denominator;
     }
 
-    @RequestMapping(value = "/soma", method=RequestMethod.GET)
-    public int soma(@RequestParam(value="n1", defaultValue="0") String v1, @RequestParam(value="n2", defaultValue="0") String v2){
-        return Integer.valueOf(v1)+Integer.valueOf(v2);
+    @RequestMapping(value="/sqrt")
+    public double squareRoot(@RequestParam("x") String number){
+        if(!isNumber(number)){
+            throw new UnsupportedMathOperationException("Invalid Parameter!");
+        }
 
+        double numberDouble = convertToDouble(number);
+
+        if(numberDouble<0){
+            throw new UnsupportedMathOperationException("Complex numbers not supported");
+        }
+
+        return Math.sqrt(numberDouble);
+
+    }
+
+    @RequestMapping(value="/mult")
+    public double multiplication(@RequestParam(value = "x") String numberOne, @RequestParam(value="y") String numberTwo){
+
+        if(!isNumber(numberOne) || !isNumber(numberTwo)){
+            throw new UnsupportedMathOperationException("Invalid Parameter!");
+        }
+
+        return convertToDouble(numberOne)*convertToDouble(numberTwo);
     }
 }

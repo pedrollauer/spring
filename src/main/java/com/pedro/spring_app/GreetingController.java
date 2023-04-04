@@ -9,14 +9,13 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 public class GreetingController {
-    private static final String template = "Hello, %s!";
+    private static final String features = "sum(x+y), sub(x-y), sqrt(x), div(x/y), mult(x*y)";
     private final AtomicLong counter = new AtomicLong();
 
-    @RequestMapping(value = "/greeting", method= RequestMethod.GET)
+    @RequestMapping(value = "/", method= RequestMethod.GET)
     public Greeting greeting(
-            @RequestParam(value = "name", defaultValue = "World")
             String name) {
-        return new Greeting(counter.incrementAndGet(), String.format(template, name));
+        return new Greeting(counter.incrementAndGet(), features);
     }
 
 }
